@@ -3,6 +3,7 @@
 #ifndef TREE_H
 #define TREE_H
 #include <iostream>
+#include <vector>
 #include "Queue.hpp"
 #include "Stack.hpp"
 
@@ -12,6 +13,7 @@ struct BiTree_Node
     T data;
     BiTree_Node<T> *leftChild;
     BiTree_Node<T> *rightChild;
+    int flag=-1;       //非递归后序 需要一个标志位 flag=0表示刚访问
 };
 
 template <typename T>
@@ -27,6 +29,7 @@ public:
     void PreOrder_Instant();
     void InOrder_Instant();
     void PostOrder_Instant();
+    void CreateNode_Instant(std::string arr,std::vector<T> values);//也可利用标志位实现，这里采用指针的指针实现 arr表示拓展二叉树的前序序列，values表示对应的值
 
 private:
     BiTree_Node<T> *root;
@@ -182,6 +185,39 @@ void BiTree_List<T>::InOrder_Instant()
 template <typename T>
 void BiTree_List<T>::PostOrder_Instant()
 {
+    Stack_Link<BiTree_Node<T>*> stack;
+    BiTree_Node<T> * p=root;
+
+    while(!stack.Empty() || p!=nullptr)
+    {
+        while(p!=nullptr )
+        {
+            stack.Push(p);
+            p->flag=0;
+            p=p->leftChild;
+        }
+        if(!stack.Empty())
+        {
+            p=stack.GetTop();
+            if(p->flag==0)
+            {
+                p->flag=1;
+                p=p->rightChild;
+            }else if(p->flag==1)
+            {
+                std::cout<<p->data<<std::endl;
+                p->flag=2;
+                stack.Pop();
+                p=nullptr;
+            }
+        }
+    }
+}
+
+template<typename T>
+void BiTree_List<T>::CreateNode_Instant(std::string arr,std::vector<T> values)
+{
+    
 }
 
 /*****************线索树(中序)******************/
@@ -346,6 +382,10 @@ void Tree_Test()
     // tree.LeverOrder();
     std::cout << "PreOrder instant :" << std::endl;
     tree.PreOrder_Instant();
+    std::cout<<"Inorder instant :"<<std::endl;
+    tree.InOrder_Instant();
+    std::cout<<"PostOrder instant :"<<std::endl;
+    tree.PostOrder_Instant();
 
     /*******线索树*********/
     // BiTree_Thread<char> tree;
