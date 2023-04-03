@@ -1,7 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Graph.hpp"
+// #include "Graph.hpp"
+#include "MST_Kruskal.hpp"
 
 using namespace std;
 
@@ -9,8 +10,7 @@ using namespace std;
 
 int main(){
 
-    GraphList_Test();
-    std::cout<<"finish"<<std::endl;
+    MST_KruskalTest();
     system("pause");
     return 0;
 }
