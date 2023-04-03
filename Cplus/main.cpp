@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Tree.hpp"
+#include "Graph.hpp"
 
 using namespace std;
 
@@ -9,6 +9,8 @@ using namespace std;
 
 int main(){
 
-    Tree_Test();
+    GraphList_Test();
+    std::cout<<"finish"<<std::endl;
+    system("pause");
     return 0;
 }
