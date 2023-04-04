@@ -21,6 +21,7 @@ class BiTree_List
 {
 public:
     BiTree_List() { root = Create(); }
+    BiTree_List(std::string arr,std::vector<T> values){CreateNode_Instant(arr,values);}
     ~BiTree_List() { Release(root); }
     void PreOrder() { PreOrder(root); }
     void InOrder() { InOrder(root); }
@@ -217,7 +218,28 @@ void BiTree_List<T>::PostOrder_Instant()
 template<typename T>
 void BiTree_List<T>::CreateNode_Instant(std::string arr,std::vector<T> values)
 {
-    
+    BiTree_Node<T> * * p=&root;
+    Stack_Link<BiTree_Node<T>*> stack;
+    // std::cout<<"arr.size="<<arr.size()<<"\tvalues.size="<<values.size()<<std::endl;
+    for(int i=0,j=-1;i<arr.size();i++)
+    {
+        std::cout<<"j="<<j<<"\tarr["<<i<<"]="<<arr[i]<<std::endl;
+        assert(j<(int)values.size() );
+        if(arr[i]=='1')
+        {
+            (*p)=new BiTree_Node<T>;
+            (*p)->data=values[++j];
+            (*p)->leftChild=nullptr;
+            (*p)->rightChild=nullptr;
+            stack.Push((*p));
+            p=&((*p)->leftChild);
+        }else if(arr[i]=='0' && !stack.Empty())
+        {
+            BiTree_Node<T>* temp=stack.Pop();
+            p=&(temp->rightChild);
+        }
+    }
+    // std::cout<<"finish"<<std::endl;
 }
 
 /*****************线索树(中序)******************/
@@ -371,7 +393,15 @@ void BiTree_Thread<T>::Release(BiTree_ThreadNode<T> *biTree)
 void Tree_Test()
 {
     /**********基本树********/
-    BiTree_List<char> tree;
+    // BiTree_List<char> tree;
+    std::string a="110100100";
+    std::vector<char> v;
+    v.push_back('A');
+    v.push_back('B');
+    v.push_back('D');
+    v.push_back('C');
+
+    BiTree_List<char>tree(a,v);
     // std::cout<<"PreOrder :"<<std::endl;
     // tree.PreOrder();
     // std::cout<<"InOrder :"<<std::endl;
