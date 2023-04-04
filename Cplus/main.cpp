@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Tree.hpp"
+#include "MST.hpp"
 
 using namespace std;
 
@@ -9,6 +9,7 @@ using namespace std;
 
 int main(){
 
-    Tree_Test();
+    Mst_Test();
+    system("pause");
     return 0;
 }
