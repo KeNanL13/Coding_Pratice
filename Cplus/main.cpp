@@ -1,9 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "MST.hpp"
-// #include "Graph.hpp"
-#include "MST_Kruskal.hpp"
+// #include "MST.hpp"
+#include "ShortestPath.hpp"
 
 
 using namespace std;
@@ -13,7 +12,9 @@ using namespace std;
 int main(){
 
 
-    MST_KruskalTest();
+    DijkstraTest();
+
+
     system("pause");
     return 0;
 }
