@@ -4,8 +4,11 @@
 #include "Stack.hpp"
 #include "Queue.hpp"
 #include <string>
+#include <limits>
 // 文件描述
 // 图的存储结构实现：领接矩阵(无向图)
+// 最短路径 Dijkstra
+
 template <typename T>
 class Graph_AdjacencyMatrix
 {
@@ -15,6 +18,8 @@ public:
     void DFSTraverse(int v);   // 深度优先遍历 非递归
     void DFSTraverse_d(int v); // 深度优先遍历 递归
     void BFSTraverse(int v);   // 广度优先遍历
+    void Dijkstra(int v);
+
 private:
     void DFSTraversePrivate(std::vector<int> &visited, int i);
     std::vector<T> vertex;
@@ -31,17 +36,26 @@ Graph_AdjacencyMatrix<T>::Graph_AdjacencyMatrix(std::vector<T> nodes, int e)
         std::vector<int> temp;
         for (int y = 0; y < nodes.size(); y++)
         {
-            temp.push_back(0);
+            if (x == y)
+            {
+                temp.push_back(0);
+            }
+            else
+            {
+                temp.push_back(INT_MAX);
+            }
         }
         arc.push_back(temp);
     }
-    int i, j;
+    int i, j,w;
     while (e--)
     {
         std::cout << "input vertex number of arc" << e << " :";
         std::cin >> i >> j;
+        std::cout<<"input weight :";
+        std::cin>>w;
         // std::cin>>j;
-        arc[i][j] = 1;
+        arc[i][j] = w;
     }
     vertexNum = nodes.size();
     arcNum = e;
@@ -134,6 +148,21 @@ void Graph_AdjacencyMatrix<T>::BFSTraverse(int v)
             }
         }
     }
+}
+
+template <typename T>
+void Graph_AdjacencyMatrix<T>::Dijkstra(int v)
+{
+    std::vector<int> dist;
+    std::vector<int> source;
+    std::vector<std::string> path;
+    for (int i = 0; i < vertex.size)
+    {
+        std::string temp = "";
+        dist.push_back(INT_MAX);
+        path.push_back(temp);
+    }
+    source.push_back(v);
 }
 
 struct ArcNode
@@ -295,7 +324,7 @@ void Graph_AdjacencyList<T>::BFSTraverse(int v)
         {
             int index = queue.DeQueue();
             node = vertex[index];
-            std::cout << node->value<<"\t";
+            std::cout << node->value << "\t";
             p = node->fristEdge;
         }
     }
