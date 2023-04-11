@@ -8,7 +8,7 @@
 
 struct Edge
 {
-    int start,end;
+    int start, end;
     int weight;
 };
 
@@ -18,7 +18,7 @@ class Graph_AdjacencyMatrix
 public:
     Graph_AdjacencyMatrix(const std::vector<T> &nodes, std::vector<Edge> edges); // 构造函数，建立具有n个顶点e条边的图
     void PrintInfo();
-    void Dijkstra();
+    void Dijkstra(int v);
     ~Graph_AdjacencyMatrix() {}
 
 private:
@@ -29,7 +29,7 @@ private:
 };
 
 template <typename T>
-Graph_AdjacencyMatrix<T>::Graph_AdjacencyMatrix(const std::vector<T>  &nodes,  std::vector<Edge> edges)
+Graph_AdjacencyMatrix<T>::Graph_AdjacencyMatrix(const std::vector<T> &nodes, std::vector<Edge> edges)
 {
     vertex = nodes;
     for (int x = 0; x < nodes.size(); x++)
@@ -37,73 +37,124 @@ Graph_AdjacencyMatrix<T>::Graph_AdjacencyMatrix(const std::vector<T>  &nodes,  s
         std::vector<int> temp;
         for (int y = 0; y < nodes.size(); y++)
         {
-            if(y==x)
+            if (y == x)
             {
                 temp.push_back(0);
             }
-            else{
+            else
+            {
                 temp.push_back(INT_MAX);
             }
         }
         arc.push_back(temp);
     }
-    
-    for(int i=0;i<edges.size();i++)
+
+    for (int i = 0; i < edges.size(); i++)
     {
-        int row=edges[i].start;
-        int column=edges[i].end;
-        arc[row][column]=edges[i].weight;
+        int row = edges[i].start;
+        int column = edges[i].end;
+        arc[row][column] = edges[i].weight;
     }
     vertexNum = nodes.size();
     arcNum = edges.size();
 }
 
-template<typename T>
+template <typename T>
 void Graph_AdjacencyMatrix<T>::PrintInfo()
 {
-    for(auto x:vertex)
+    for (auto x : vertex)
     {
-        std::cout<<x<<std::endl;
+        std::cout << x << std::endl;
     }
 
-    for(auto x : arc)
+    for (auto x : arc)
     {
-        for(auto y : x)
+        for (auto y : x)
         {
-            if(y==INT_MAX)
+            if (y == INT_MAX)
             {
-                std::cout<<"oo\t";
-            }else{
-                std::cout<<y<<"\t";
-            }  
+                std::cout << "oo\t";
+            }
+            else
+            {
+                std::cout << y << "\t";
+            }
         }
-        std::cout<<std::endl;
+        std::cout << std::endl;
     }
 }
-template<typename T>
-void Graph_AdjacencyMatrix<T>::Dijkstra()
+int FindMin(std::vector<int> d)
+{
+    int min = INT_MAX;
+    int index = -1;
+
+    for (int i = 0; i < d.size(); i++)
+    {
+        if (d[i] < min && d[i] != 0)
+        {
+            min = d[i];
+            index = i;
+        }
+    }
+    return index;
+}
+template <typename T>
+void Graph_AdjacencyMatrix<T>::Dijkstra(int v)
 {
     std::vector<int> dist;
     std::vector<std::string> path;
     std::vector<int> source;
-    for(int i=0 ;i<vertex.size();i++)
+    for (int i = 0; i < vertex.size(); i++)
     {
-        dist.push_back(0);
-        // path.push_back("v0");
+        dist.push_back(v);
+        path.push_back("");
     }
 
-    source.push_back(0);//将第一个节点放入源数组
-    for(int i=0;i<vertex.size();i++)
+    source.push_back(v); // 将第一个节点放入源数组
+    for (int i = 0; i < vertex.size(); i++)
     {
-        dist[i]=arc[0][i];
-        std::string path;
-        if(dist[i]==INT_MAX)
+        dist[i] = arc[v][i];
+
+        if (dist[i] != INT_MAX && dist[i] != 0)
         {
-             path+=util::Format("v{1}v{2}",0,i);
+            std::string t_path;
+            t_path = util::Format("v{0}v{1}", v, i);
+            path[i] = t_path;
         }
     }
 
-    for(int i=0;i<)
+    while (source.size() != vertex.size())
+    {
+
+        std::cout << "result" << std::endl;
+        int index = FindMin(dist);
+        if(index==-1)
+        {
+            break;
+        }                                    // find min value in the dist
+        std::cout << dist[index] << "\t" << path[index] << std::endl; // print the minimum path information
+        source.push_back(index);                                      // add this vertex to the source
+
+        // update dist and path
+        for (int i = 0; i < dist.size(); i++)
+        {
+            int d = arc[index][i];
+            if (d!=INT_MAX&&dist[i] > dist[index] + d)
+            {
+                dist[i] = dist[index] + d;
+                std::string a = util::Format("v{0}", i);
+                path[i] = path[index] + a;
+            }
+        }
+
+        dist[index] = 0;
+        // std::cout << "dist and path" << std::endl;
+        // for (int i = 0; i < dist.size(); i++)
+        // {
+        //     std::cout << dist[i] << "\t" << path[i] << std::endl;
+        // }
+   
+    }
 }
 
 void DijkstraTest()
@@ -114,20 +165,46 @@ void DijkstraTest()
     vertex.push_back("C");
     vertex.push_back("D");
     vertex.push_back("E");
-    vertex.push_back("F");
     std::vector<Edge> arc;
-    Edge e0;e0.start=0;e0.end=1;e0.weight=34;arc.push_back(e0);
-    Edge e1;e1.start=0;e1.end=2;e1.weight=46;arc.push_back(e1);
-    Edge e2;e2.start=0;e2.end=5;e2.weight=19;arc.push_back(e2);
-    Edge e3;e3.start=1;e3.end=4;e3.weight=12;arc.push_back(e3);
-    Edge e4;e4.start=4;e4.end=5;e4.weight=26;arc.push_back(e4);
-    Edge e5;e5.start=4;e5.end=3;e5.weight=38;arc.push_back(e5);
-    Edge e6;e6.start=2;e6.end=5;e6.weight=25;arc.push_back(e6);
-    Edge e7;e7.start=2;e7.end=3;e7.weight=17;arc.push_back(e7);
-    Edge e8;e8.start=3;e8.end=5;e8.weight=25;arc.push_back(e8);
-    
-    Graph_AdjacencyMatrix<std::string> graph(vertex,arc);
-    graph.PrintInfo();
+    Edge e0;
+    e0.start = 0;
+    e0.end = 1;
+    e0.weight = 10;
+    arc.push_back(e0);
+    Edge e1;
+    e1.start = 0;
+    e1.end = 3;
+    e1.weight = 30;
+    arc.push_back(e1);
+    Edge e2;
+    e2.start = 0;
+    e2.end = 4;
+    e2.weight = 100;
+    arc.push_back(e2);
+    Edge e3;
+    e3.start = 1;
+    e3.end = 2;
+    e3.weight = 50;
+    arc.push_back(e3);
+    Edge e4;
+    e4.start = 2;
+    e4.end = 4;
+    e4.weight = 10;
+    arc.push_back(e4);
+    Edge e5;
+    e5.start = 3;
+    e5.end = 4;
+    e5.weight = 60;
+    arc.push_back(e5);
+    Edge e6;
+    e6.start = 3;
+    e6.end = 2;
+    e6.weight = 20;
+    arc.push_back(e6);
+
+    Graph_AdjacencyMatrix<std::string> graph(vertex, arc);
+    // graph.PrintInfo();
+    graph.Dijkstra(4);
 }
 
 #endif

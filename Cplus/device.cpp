@@ -14,13 +14,6 @@ struct Flow
     int t_Out;
 };
 
-struct OutputData
-{
-    int flowId;
-    int portId;
-    int time;
-};
-
 class NetDevice;
 
 class Port
@@ -31,12 +24,6 @@ public:
     }
     ~Port()
     {
-        // for (auto x : m_flows)
-        // {
-        //     delete x;
-        //     x = nullptr;
-        // }
-        // m_flows.clear();
     }
 
     int GetResidualTime() { return t_sum; }
@@ -59,7 +46,7 @@ public:
         return m_flows.size() == 0;
     }
     // 更新Flow信息
-    void Update(std::vector<OutputData *> &result, int t)
+    void Update(std::vector<Flow *> &result, int t)
     {
         t_sum -= m_flows.size(); // 剩余总时间更新
         // 每个正在发送的flow时间更新
@@ -70,11 +57,8 @@ public:
             if ((*it)->t_Out == 0)
             {
                 // std::cout << "Flow_id:" << (*it)->id << "\tPort_id:" << port_id << "\tstart_time:" << (*it)->t_In << std::endl;
-                OutputData *o = new OutputData;
-                o->flowId = (*it)->id;
-                o->portId = port_id;
-                o->time = (*it)->t_In;
-                result.push_back(o);
+                (*it)->t_Out = port_id;
+                result.push_back((*it));
                 s_sum += (*it)->s;
                 m_flows.remove(*it);
             }
@@ -122,13 +106,13 @@ private:
 
 class NetDevice
 {
-    friend class Port;
+    // friend class Port;
 
 private:                       // attribute
     std::vector<Port *> Ports; // 存储port
     std::vector<Flow *> flows; // 存储流
     std::list<Flow *> controlList;
-    std::vector<OutputData *> result;
+    std::vector<Flow *> result;
 
 private: // methond
     //
@@ -238,8 +222,8 @@ bool NetDevice::OutputResult(const char path[])
     for (int i = 0; i < result.size(); i++)
     {
         std::string temp;
-        OutputData *f = result[i];
-        temp = std::to_string(f->flowId) + "," + std::to_string(f->portId) + "," + std::to_string(f->time) + "\n";
+        Flow *f = result[i];
+        temp = std::to_string(f->id) + "," + std::to_string(f->t_Out) + "," + std::to_string(f->t_In) + "\n";
         Data << temp;
     }
     Data.close();
@@ -326,11 +310,7 @@ void NetDevice::ClearStorage()
     }
     flows.clear();
     controlList.clear();
-    for(auto &x : result)
-    {
-        delete x ;
-        x=nullptr;
-    }
+
     result.clear();
 }
 
@@ -348,6 +328,7 @@ bool NetDevice::Run(std::string flow, std::string port)
     }
     std::sort(flows.begin(), flows.end(), [=](const Flow *flow1, const Flow *flow2) -> bool
               { return flow1->t_In < flow2->t_In; });
+    // std::cout<<"read finish"<<std::endl;
 
     ///////////////////////////test///////////////////////////////////////////////
     // int portMaxBand = 0;
@@ -412,6 +393,7 @@ bool NetDevice::Run(std::string flow, std::string port)
             exitFlag &= Ports[i]->IsPortEmpty();
         }
         // 在controlList中加入
+
         while (controlList.size() != 0 && GetMaxBand(Ports) > controlList.front()->s)
         {
             int port_index = selectPort(controlList.front(), Ports);
@@ -474,17 +456,31 @@ bool NetDevice::Run(std::string flow, std::string port)
 
 int main(int argv, char **argc)
 {
-    NetDevice device;
+
+    // NetDevice device;
+    // std::string path = "../data/";
+    // int i = 0;
+    // std::string path1 = path + std::to_string(0) + "/flow.txt";
+    // std::string path2 = path + std::to_string(0) + "/port.txt";
+    // while (device.Run(path1, path2))
+    // {
+    //     ++i;
+    //     path1 = path + std::to_string(i) + "/flow.txt";
+    //     path2 = path + std::to_string(i) + "/port.txt";
+    // }
+
     std::string path = "../data/";
     int i = 0;
-    std::string path1 = path + std::to_string(0) + "/flow.txt";
-    std::string path2 = path + std::to_string(0) + "/port.txt";
-    while (device.Run(path1, path2))
+    bool flag = true;
+    while (flag)
     {
+        NetDevice device;
+        std::string path1 = path + std::to_string(i) + "/flow.txt";
+        std::string path2 = path + std::to_string(i) + "/port.txt";
+        flag = device.Run(path1, path2);
         ++i;
-        path1 = path + std::to_string(i) + "/flow.txt";
-        path2 = path + std::to_string(i) + "/port.txt";
     }
+
     // system("pause");
     return 0;
 }
