@@ -1,9 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-// #include "MST.hpp"
-#include "ShortestPath.hpp"
-// #include "Pattern_Matching.h"
+#include "BiSearchTree.hpp"
 
 #include <list>
 using namespace std;
@@ -12,7 +10,7 @@ using namespace std;
 
 int main(){
 
-    DijkstraTest();
+    BiSearchTree_Test();
 
     // system("pause");
     return 0;
