@@ -30,6 +30,7 @@ public:
     void Insert(int i, T value);
     T Delete(int i);
     void PrintList();
+    void PushBack(T value);
 
 private:
     Node<T> *m_head = nullptr;
@@ -180,6 +181,20 @@ void Array_List<T>::Insert(int i, T value)
         index++;
         p = p->next;
     }
+}
+
+template <typename T>
+void Array_List<T>::PushBack(T value)
+{
+    Node<T> * node=new Node<T>;
+    node->data=value;
+    node->next=nullptr;
+    Node<T> * p=m_head;
+    while(p->next!=nullptr)
+    {
+        p=p->next;
+    }
+    p->next=node;
 }
 
 template <typename T>

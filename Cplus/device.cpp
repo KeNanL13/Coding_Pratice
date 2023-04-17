@@ -24,6 +24,12 @@ public:
     }
     ~Port()
     {
+        for(auto & x :m_flows)
+        {
+            x=nullptr;
+        }
+        m_flows.clear();
+    
     }
 
     int GetResidualTime() { return t_sum; }
@@ -49,18 +55,21 @@ public:
     void Update(std::vector<Flow *> &result, int t)
     {
         t_sum -= m_flows.size(); // 剩余总时间更新
+
         // 每个正在发送的flow时间更新
         for (std::list<Flow *>::iterator it = m_flows.begin(); it != m_flows.end(); it++)
         {
-            // std::cout<<(*it)->t_Out<<std::endl;
             (*it)->t_Out--;
             if ((*it)->t_Out == 0)
             {
-                // std::cout << "Flow_id:" << (*it)->id << "\tPort_id:" << port_id << "\tstart_time:" << (*it)->t_In << std::endl;
                 (*it)->t_Out = port_id;
                 result.push_back((*it));
                 s_sum += (*it)->s;
                 m_flows.remove(*it);
+                if(m_flows.size()==0)
+                {
+                    break;
+                }
             }
         }
 
@@ -75,6 +84,7 @@ public:
             // t_sum+=waitList.front()->t_Out;
             waitList.pop(); // 退出等待区
         }
+        std::cout<<"finish wait"<<std::endl;
     }
     // 添加Flow
     void AddFlow(Flow *f, int t)
@@ -128,7 +138,8 @@ private: // methond
 public:
     NetDevice(/* args */) {}
     bool Run(std::string flow, std::string port);
-    ~NetDevice() { ClearStorage(); }
+    ~NetDevice() { ClearStorage();
+    std::cout<<"using the ~function"<<std::endl; }
 };
 // 分割字符串
 void NetDevice::SplitString(const std::string &s, std::vector<std::string> &vector, const std::string &c)
@@ -382,14 +393,16 @@ bool NetDevice::Run(std::string flow, std::string port)
     int time = 0;
     int index = 0;
     bool exitFlag = 0;
-
     while (index != flows.size() || !exitFlag)
     {
         // 更新Port
+
         exitFlag = 1; // 结束标志
         for (int i = 0; i < Ports.size(); i++)
         {
+   
             Ports[i]->Update(result, time);
+         
             exitFlag &= Ports[i]->IsPortEmpty();
         }
         // 在controlList中加入
@@ -419,6 +432,7 @@ bool NetDevice::Run(std::string flow, std::string port)
             }
             index++;
         }
+
         if (controlList.size() != 0)
         {
             // std::sort(controlList.begin(), controlList.end(), [=](const Flow *flow1, const Flow *flow2) -> bool
@@ -428,7 +442,6 @@ bool NetDevice::Run(std::string flow, std::string port)
                              { return flow1->s < flow2->s; });
             //  { return flow1->t_Out <  flow2->t_Out; });
         }
-
         ++time; // 时间步进
     }
 
@@ -457,17 +470,7 @@ bool NetDevice::Run(std::string flow, std::string port)
 int main(int argv, char **argc)
 {
 
-    // NetDevice device;
-    // std::string path = "../data/";
-    // int i = 0;
-    // std::string path1 = path + std::to_string(0) + "/flow.txt";
-    // std::string path2 = path + std::to_string(0) + "/port.txt";
-    // while (device.Run(path1, path2))
-    // {
-    //     ++i;
-    //     path1 = path + std::to_string(i) + "/flow.txt";
-    //     path2 = path + std::to_string(i) + "/port.txt";
-    // }
+    
 
     std::string path = "../data/";
     int i = 0;
