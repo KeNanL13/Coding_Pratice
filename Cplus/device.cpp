@@ -61,6 +61,10 @@ public:
                 result.push_back((*it));
                 s_sum += (*it)->s;
                 m_flows.remove(*it);
+                if(m_flows.size()==0)
+                {
+                    break;
+                }
             }
         }
 
