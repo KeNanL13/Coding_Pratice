@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
-void GetLeftAndRight(std::vector<int> &v1, std::vector<int> &v2, const int &standard, int &left, int &right)
+#include <algorithm>
+void GetLeftAndRight(std::vector<int> &v1, std::vector<int> &v2, const int &standard, int &left, int &right）
 {
     left = 0;
     right = 0;
@@ -10,110 +11,96 @@ void GetLeftAndRight(std::vector<int> &v1, std::vector<int> &v2, const int &stan
     int mid;
     while (start < end)
     {
-        mid = (start + end) / 2;
+        mid = (start + end) >> 1;
         if (standard > v2[mid])
         {
             left += mid - start + 1;
             start = mid + 1;
         }
-        else
+        else 
         {
             right += end - mid + 1;
             end = mid - 1;
         }
+    }
+    if (start == end)
+    {
 
-        if (start == end)
+        if (standard > v2[start])
         {
 
-            if (standard > v2[start])
-            {
-
-                left++;
-            }
-            else
-            {
-                right++;
-            }
+            left++;
         }
-        // std::cout<<"start:"<<start<<"end:"<<end<<std::endl;
-        // std::cout<<"left:"<<left<<"\tright:"<<right<<std::endl;
+        else
+        {
+            right++;
+        }
     }
 }
 
-std::vector<std::string> sortPeople(std::vector<std::string>& names,std:: vector<int>& heights) {
-        for(int i=0;i<heights.size();i++)
+int FindFlag(std::vector<int> &v1, std::vector<int> &v2)
+{
+    int left = 0, right = 0, lvalue = 0, rvalue = 0;
+    
+    int pos = (v1.size() - 1) >>1;
+
+    GetLeftAndRight(v1, v2, v1[pos], left, right);
+    lvalue = pos + left;
+    rvalue = v1.size() - 1 - pos + right;
+    bool flag = rvalue - lvalue > 0;
+    std::cout<<"lvalue="<<lvalue<<"\trvalue="<<rvalue<<std::endl;
+    while (lvalue - rvalue > 1 || lvalue - rvalue < -1)
+    {
+        if (rvalue - lvalue > 0 != flag)
         {
-            int max=heights[i];
-            int index=i;
-            std::cout<<"i="<<i<<"\tmax="<<max<<std::endl;
-            for(int j=i+1;j<heights.size();j++)
-            {
-                if(heights[j]>max)
-                {
-                    max=heights[j];
-                    index=j;
-                }
-            }
-            std::cout<<"i="<<i<<"\tmax="<<max<<std::endl;
-            if(index!=i)
-            {
-            std::string temp=names[i];
-            names[i]=names[index];
-            names[index]=temp;
-            }
+            return -1;
         }
-        return names;
+        pos += ((rvalue - lvalue) >>1);
+
+        GetLeftAndRight(v1, v2, v1[pos], left, right);
+        lvalue = pos + left;
+        rvalue = v1.size() - 1 - pos + right;
+        
+    }
+    return pos;
 }
 
 int main()
 {
-    std::vector<int> v1{1,3};
-    std::vector<int> v2{2};
-    int left = 0;
-    int right = 0;
-    int flag1 = (v1.size() - 1) / 2;
-    int flag2 = (v2.size() - 1) / 2;
-    int lvalue = 0, rvalue = 0;
-    GetLeftAndRight(v1, v2, v1[flag1], left, right);
-    lvalue = flag1 + left;
-    rvalue = v1.size() - 1 - flag1 + right;
-    flag1 += ((rvalue - lvalue) / 2);
-    bool flag=rvalue-lvalue>0;
-    while (lvalue - rvalue > 1 || lvalue - rvalue < -1)
+    std::vector<int> nums1{2,2,4,4};
+    std::vector<int> nums2{2,2,4,4};
+    double result;
+
+    
+    if (nums1.size() == 0 && nums2.size() == 0)
     {
-        GetLeftAndRight(v1, v2, v1[flag1], left, right);
-        std::cout << "v1 mid ,v2  left:" << left << "\tv2 right" << right << std::endl;
-        lvalue = flag1 + left;
-        rvalue = v1.size() - 1 - flag1 + right;
-        std::cout << "lvalue:" << lvalue << "\trvalue:" << rvalue << std::endl;
-        std::cout << "flag1=" << flag1 << std::endl;
-        if(rvalue-lvalue>0 !=flag){
-            break;
-        }
-        flag1 += ((rvalue - lvalue) / 2);
-    }
-    std::cout<<"flag1="<<flag1<<std::endl;
-    flag2=left-1;
-    GetLeftAndRight(v2,v1,v2[flag2],left,right);
-    lvalue=flag2+left;
-    rvalue=v2.size()-1-flag2+right;
-    flag2+=(rvalue-lvalue)/2;
-    flag=rvalue-lvalue>0;
-    while(lvalue - rvalue > 1 || lvalue - rvalue < -1)
+        result = 0.0;
+        
+    }else if (nums1.size()==0)
     {
-        GetLeftAndRight(v2, v1, v2[flag2], left, right);
-        std::cout << "v1 mid ,v2  left:" << left << "\tv2 right" << right << std::endl;
-        lvalue = flag2 + left;
-        rvalue = v2.size() - 1 - flag2 + right;
-        std::cout << "lvalue:" << lvalue << "\trvalue:" << rvalue << std::endl;
-        std::cout << "flag2=" << flag2 << std::endl;
-        if(rvalue-lvalue>0 !=flag){
-            break;
-        }
-        flag1 += ((rvalue - lvalue) / 2);
+        result =nums2.size()%2==0?(double)(nums2[nums2.size()>>1]+nums2[nums2.size()>>1-1])/2 : nums2[nums2.size()>>1];
+    }else if(nums2.size()==0)
+    {
+        result =nums1.size()%2==0?(double)(nums1[nums1.size()>>1]+nums1[nums1.size()>>1-1])/2 : nums1[nums1.size()>>1];
     }
-    std::cout<<"flag2="<<flag2<<std::endl;
-    std::cout<<"left="<<left<<"\tright="<<right<<std::endl;
+    
+    int f1 = FindFlag(nums1, nums2);
+    int f2 = FindFlag(nums2, nums1);
+    std::cout<<"f1="<<f1<<"\tf2="<<f2<<std::endl;
+    if (f1 >= 0 && f2 >= 0)
+    {
+        result = (double)(nums1[f1] + nums2[f2]) / 2;
+    }
+    else if (f1 >= 0)
+    {
+        result = nums1[f1];
+    }
+    else if (f2 >= 0)
+    {
+        result = nums2[f2];
+    }
+    std::cout<<"result="<<result<<std::endl;
+  
 
 
     // std::vector<std::string> names{"IEO","Sgizfdfrims","QTASHKQ","Vk","RPJOFYZUBFSIYp","EPCFFt","VOYGWWNCf","WSpmqvb"};
@@ -123,6 +110,7 @@ int main()
     // {
     //     std::cout<<x<<std::endl;
     // }
+    
 
     return 0;
 }
